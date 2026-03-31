@@ -52,7 +52,7 @@ export default function Chat() {
         if (tab) params.role = tab
         if (statusFilter) params.status = statusFilter
         if (search.trim()) params.q = search.trim()
-        const res = await api.get('/api/admin/support/tickets', { params })
+        const res = await api.get('/api/admin/support/tickets', params)
         if (!cancelled) {
           setTickets(res.data?.list ?? [])
           setTotal(res.data?.total ?? 0)

@@ -15,17 +15,12 @@ export default function Dashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [providersRes, bookingsRes, customersRes] = await Promise.all([
-          api.get('/api/admin/providers', { limit: 1 }),
+        const [statsRes, bookingsRes] = await Promise.all([
+          api.get('/api/admin/stats'),
           api.get('/api/admin/bookings', { limit: 5 }),
-          api.get('/api/admin/customers', { limit: 1 }),
         ])
         if (cancelled) return
-        setStats({
-          providers: providersRes.data?.total ?? 0,
-          bookings: bookingsRes.data?.total ?? 0,
-          customers: customersRes.data?.total ?? 0,
-        })
+        setStats(statsRes.data || {})
         setRecentBookings(bookingsRes.data?.list ?? [])
       } catch (err) {
         if (!cancelled) setError(err.response?.data?.error || err.message)
@@ -58,18 +53,22 @@ export default function Dashboard() {
           {error}
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6">
-          <div className="text-sm font-medium text-slate-500">Providers</div>
-          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.providers}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6 hover:border-primary/50 transition-colors">
+          <div className="text-sm font-medium text-slate-500">Total Providers</div>
+          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.providers?.total ?? 0}</div>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6">
-          <div className="text-sm font-medium text-slate-500">Bookings</div>
-          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.bookings}</div>
+        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6 hover:border-yellow-400/50 transition-colors">
+          <div className="text-sm font-medium text-slate-500">Verification Queue</div>
+          <div className="mt-2 text-3xl font-bold text-yellow-600">{stats.providers?.unverified ?? 0}</div>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6">
-          <div className="text-sm font-medium text-slate-500">Customers</div>
-          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.customers}</div>
+        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6 hover:border-primary/50 transition-colors">
+          <div className="text-sm font-medium text-slate-500">Total Bookings</div>
+          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.bookings?.total ?? 0}</div>
+        </div>
+        <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-6 hover:border-primary/50 transition-colors">
+          <div className="text-sm font-medium text-slate-500">Active Services</div>
+          <div className="mt-2 text-3xl font-bold text-slate-900">{stats.services?.active ?? 0}</div>
         </div>
       </div>
       <div className="rounded-xl bg-white border border-slate-200 shadow-sm">

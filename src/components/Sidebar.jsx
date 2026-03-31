@@ -23,6 +23,7 @@ const menuGroups = [
     label: 'Provider Management',
     items: [
       { label: 'Providers', path: '/providers', icon: UserGroupIcon },
+      { label: 'Worker Registrations', path: '/providers/registrations', icon: ClipboardDocumentListIcon },
       { label: 'Payment Request', path: '/providers/payment-request', icon: UserGroupIcon },
       { label: 'Settlements', path: '/providers/settlements', icon: UserGroupIcon },
       { label: 'Cash Collection', path: '/providers/cash-collection', icon: UserGroupIcon },
@@ -91,6 +92,7 @@ const menuGroups = [
       { label: 'FAQs', path: '/system/faqs', icon: Cog6ToothIcon },
       { label: 'System Users', path: '/system/users', icon: Cog6ToothIcon },
       { label: 'Database Backup', path: '/system/backup', icon: Cog6ToothIcon },
+      { label: 'Audit Logs', path: '/system/audit', icon: ClipboardDocumentListIcon },
     ],
   },
 ]

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useApi } from '../../api/client'
+import { Link } from 'react-router-dom'
 import DataTable from '../../components/DataTable'
 import Pagination from '../../components/Pagination'
 
@@ -48,9 +49,20 @@ export default function Customers() {
         <div className="p-6">
           <DataTable
             columns={[
-              { key: 'uid', label: 'UID' },
+              { 
+                key: 'uid', 
+                label: 'UID',
+                render: (v) => <Link to={`/customers/${v}`} className="text-primary hover:underline font-mono text-sm">{v}</Link>
+              },
               { key: 'email', label: 'Email' },
-              { key: 'displayName', label: 'Name' },
+              { 
+                key: 'name', 
+                label: 'Name',
+                render: (_, row) => {
+                  const name = [row.firstName, row.lastName].filter(Boolean).join(' ') || row.displayName || '-'
+                  return <Link to={`/customers/${row.uid}`} className="text-slate-900 font-medium hover:text-primary transition-colors">{name}</Link>
+                }
+              },
               {
                 key: 'createdAt',
                 label: 'Created',

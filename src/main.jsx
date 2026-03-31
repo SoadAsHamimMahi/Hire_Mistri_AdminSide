@@ -8,6 +8,8 @@ import Login from './pages/Login'
 import Unauthorized from './pages/Unauthorized'
 import Dashboard from './pages/Dashboard'
 import Providers from './pages/providers/Providers'
+import WorkerDetail from './pages/providers/WorkerDetail'
+import WorkerRegistrations from './pages/providers/WorkerRegistrations'
 import PaymentRequest from './pages/providers/PaymentRequest'
 import Settlements from './pages/providers/Settlements'
 import CashCollection from './pages/providers/CashCollection'
@@ -21,6 +23,7 @@ import Categories from './pages/services/Categories'
 import Sliders from './pages/homeScreen/Sliders'
 import FeaturedSection from './pages/homeScreen/FeaturedSection'
 import Customers from './pages/customers/Customers'
+import CustomerDetail from './pages/customers/CustomerDetail'
 import Transactions from './pages/customers/Transactions'
 import Addresses from './pages/customers/Addresses'
 import UserQueries from './pages/support/UserQueries'
@@ -35,6 +38,7 @@ import Gallery from './pages/media/Gallery'
 import Faqs from './pages/system/Faqs'
 import SystemUsers from './pages/system/SystemUsers'
 import DatabaseBackup from './pages/system/DatabaseBackup'
+import AdminAudit from './pages/system/AdminAudit'
 import './index.css'
 
 const router = createBrowserRouter([
@@ -51,6 +55,8 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'providers', element: <Providers /> },
+      { path: 'providers/:uid', element: <WorkerDetail /> },
+      { path: 'providers/registrations', element: <WorkerRegistrations /> },
       { path: 'providers/payment-request', element: <PaymentRequest /> },
       { path: 'providers/settlements', element: <Settlements /> },
       { path: 'providers/cash-collection', element: <CashCollection /> },
@@ -64,6 +70,7 @@ const router = createBrowserRouter([
       { path: 'home-screen/sliders', element: <Sliders /> },
       { path: 'home-screen/featured', element: <FeaturedSection /> },
       { path: 'customers', element: <Customers /> },
+      { path: 'customers/:uid', element: <CustomerDetail /> },
       { path: 'customers/transactions', element: <Transactions /> },
       { path: 'customers/addresses', element: <Addresses /> },
       { path: 'support/queries', element: <UserQueries /> },
@@ -78,6 +85,7 @@ const router = createBrowserRouter([
       { path: 'system/faqs', element: <Faqs /> },
       { path: 'system/users', element: <SystemUsers /> },
       { path: 'system/backup', element: <DatabaseBackup /> },
+      { path: 'system/audit', element: <AdminAudit /> },
     ],
   },
 ])
