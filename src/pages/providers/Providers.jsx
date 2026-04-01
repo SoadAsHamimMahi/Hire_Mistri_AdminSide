@@ -4,6 +4,7 @@ import DataTable from '../../components/DataTable'
 import FilterBar from '../../components/FilterBar'
 import Pagination from '../../components/Pagination'
 import ConfirmModal from '../../components/ConfirmModal'
+import { Link } from 'react-router-dom'
 
 export default function Providers() {
   const api = useApi()
@@ -12,6 +13,7 @@ export default function Providers() {
   const [page, setPage] = useState(1)
   const [limit] = useState(20)
   const [status, setStatus] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [modal, setModal] = useState({ open: false, uid: null, action: null })
@@ -23,6 +25,7 @@ export default function Providers() {
     try {
       const params = { page, limit }
       if (status) params.status = status
+      if (searchQuery.trim()) params.search = searchQuery.trim()
       const res = await api.get('/api/admin/providers', params)
       setList(res.data?.list ?? [])
       setTotal(res.data?.total ?? 0)
@@ -34,8 +37,12 @@ export default function Providers() {
   }
 
   useEffect(() => {
-    fetchProviders()
-  }, [page, status])
+    // Add a small debounce if typing rapidly, or just fetch instantly.
+    const delayDebounceFn = setTimeout(() => {
+      fetchProviders()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [page, status, searchQuery])
 
   const handleStatusChange = async () => {
     if (!modal.uid || !modal.action) return
@@ -65,15 +72,24 @@ export default function Providers() {
         </div>
       )}
       <FilterBar>
-        <select
-          className="select select-bordered select-sm bg-white border-slate-200"
-          value={status}
-          onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="suspended">Suspended</option>
-        </select>
+        <div className="flex flex-wrap gap-3 items-center w-full">
+          <input 
+            type="text" 
+            placeholder="Search by name or email..." 
+            className="input input-bordered input-sm bg-white border-slate-200 flex-1 min-w-[200px]"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+          />
+          <select
+            className="select select-bordered select-sm bg-white border-slate-200"
+            value={status}
+            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
       </FilterBar>
       <div className="rounded-xl bg-white border border-slate-200 shadow-sm">
         <div className="p-6">
@@ -113,17 +129,25 @@ export default function Providers() {
                 render: (v) => (v ? new Date(v).toLocaleDateString() : '-'),
               },
               {
+                key: 'dueBalance',
+                label: 'Due Balance',
+                render: (_, row) => (
+                  <div className={`font-bold ${Number(row.dueBalance || 0) > 0 ? 'text-rose-600' : 'text-slate-500'}`}>
+                    ৳ {Number(row.dueBalance || 0).toLocaleString()}
+                  </div>
+                ),
+              },
+              {
                 key: 'uid',
                 label: 'Actions',
                 render: (uid, row) => (
                   <div className="flex gap-2">
-                    <button
-                      type="button"
+                    <Link
+                      to={`/providers/${uid}`}
                       className="btn btn-xs btn-outline btn-neutral"
-                      onClick={() => setDetailsModal({ open: true, provider: row })}
                     >
                       Details
-                    </button>
+                    </Link>
                     {!row.isVerified ? (
                       <button
                         type="button"

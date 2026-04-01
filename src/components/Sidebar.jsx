@@ -27,6 +27,8 @@ const menuGroups = [
       { label: 'Payment Request', path: '/providers/payment-request', icon: UserGroupIcon },
       { label: 'Settlements', path: '/providers/settlements', icon: UserGroupIcon },
       { label: 'Cash Collection', path: '/providers/cash-collection', icon: UserGroupIcon },
+      { label: 'Ledgers', path: '/providers/ledgers', icon: ClipboardDocumentListIcon },
+      { label: 'Due Payments', path: '/providers/due-payments', icon: UserGroupIcon },
     ],
   },
   {

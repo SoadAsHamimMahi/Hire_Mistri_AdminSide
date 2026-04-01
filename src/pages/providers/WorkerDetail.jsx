@@ -98,6 +98,22 @@ export default function WorkerDetail() {
   const [bookingsLoading, setBookingsLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // Due Management State
+  const [dueInput, setDueInput] = useState('')
+  const [dueLoading, setDueLoading] = useState(false)
+
+  const loadProfile = async () => {
+    setLoading(true)
+    try {
+      const res = await api.get(`/api/admin/providers/${uid}`)
+      setProfile(res.data)
+    } catch (err) {
+      setError(err.response?.data?.error || err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!uid) return
 
@@ -129,6 +145,26 @@ export default function WorkerDetail() {
     loadProfile()
     loadBookings()
   }, [uid])
+
+  const handleDueAction = async (action) => {
+    if (action === 'clear' && !window.confirm('Are you sure you want to completely clear this worker\'s due balance?')) return;
+    if ((action === 'add' || action === 'subtract') && (!dueInput || Number(dueInput) <= 0)) {
+       return alert('Please enter a valid amount greater than 0');
+    }
+
+    setDueLoading(true)
+    try {
+      const payload = { action, amount: Number(dueInput) || 0 };
+      await api.post(`/api/admin/providers/${uid}/due`, payload);
+      setDueInput('');
+      await loadProfile(); // Refresh profile to get updated due limits
+      alert(`Successfully updated due balance.`)
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to update due balance');
+    } finally {
+      setDueLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -204,6 +240,58 @@ export default function WorkerDetail() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left column: Contact + Registration details */}
         <div className="md:col-span-1 space-y-4">
+          
+          {/* Due Management */}
+          <div className="bg-white rounded-2xl border border-rose-200 shadow-sm p-6 overflow-hidden relative">
+             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                <span className="text-6xl">💰</span>
+             </div>
+             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Financial Dues</h2>
+             <div className="mb-6 flex items-end gap-2 text-rose-600">
+                <span className="text-sm font-bold pb-1">৳</span>
+                <span className="text-4xl font-extrabold tracking-tight">{Number(profile?.dueBalance || 0).toLocaleString()}</span>
+             </div>
+             
+             <div className="space-y-4 relative z-10">
+                <div>
+                   <label className="text-xs font-semibold text-slate-500 mb-1 block">Adjust Amount (৳)</label>
+                   <input 
+                      type="number" 
+                      min="1"
+                      placeholder="E.g. 150" 
+                      value={dueInput}
+                      onChange={(e) => setDueInput(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 font-medium" 
+                   />
+                </div>
+                <div className="flex gap-2">
+                   <button 
+                      onClick={() => handleDueAction('subtract')} 
+                      disabled={dueLoading || !dueInput}
+                      className="flex-1 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                   >
+                      - Reduce
+                   </button>
+                   <button 
+                      onClick={() => handleDueAction('add')} 
+                      disabled={dueLoading || !dueInput}
+                      className="flex-1 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                   >
+                      + Add
+                   </button>
+                </div>
+                <div className="pt-2 border-t border-slate-100">
+                   <button 
+                      onClick={() => handleDueAction('clear')} 
+                      disabled={dueLoading || Number(profile?.dueBalance || 0) <= 0}
+                      className="w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-bold shadow-sm shadow-rose-500/20 transition-colors uppercase tracking-widest disabled:opacity-50"
+                   >
+                      {dueLoading ? 'Processing...' : 'Clear All Dues'}
+                   </button>
+                </div>
+             </div>
+          </div>
+
           {/* Contact Info */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
             <h2 className="text-sm font-bold text-slate-700 border-b pb-2">Contact & Profile</h2>

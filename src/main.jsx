@@ -13,6 +13,8 @@ import WorkerRegistrations from './pages/providers/WorkerRegistrations'
 import PaymentRequest from './pages/providers/PaymentRequest'
 import Settlements from './pages/providers/Settlements'
 import CashCollection from './pages/providers/CashCollection'
+import Ledgers from './pages/providers/Ledgers'
+import DuePayments from './pages/providers/DuePayments'
 import Bookings from './pages/bookings/Bookings'
 import BookingPayments from './pages/bookings/BookingPayments'
 import CustomJobRequests from './pages/bookings/CustomJobRequests'
@@ -60,6 +62,8 @@ const router = createBrowserRouter([
       { path: 'providers/payment-request', element: <PaymentRequest /> },
       { path: 'providers/settlements', element: <Settlements /> },
       { path: 'providers/cash-collection', element: <CashCollection /> },
+      { path: 'providers/ledgers', element: <Ledgers /> },
+      { path: 'providers/due-payments', element: <DuePayments /> },
       { path: 'bookings', element: <Bookings /> },
       { path: 'bookings/payments', element: <BookingPayments /> },
       { path: 'bookings/custom-requests', element: <CustomJobRequests /> },
