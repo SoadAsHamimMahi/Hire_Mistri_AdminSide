@@ -11,7 +11,8 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/dashboard'
-  const { signIn } = useContext(AuthContext)
+  const { signIn, resetPassword } = useContext(AuthContext)
+  const [resetSent, setResetSent] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,6 +23,23 @@ export default function Login() {
       navigate(from, { replace: true })
     } catch (err) {
       setError(err.message || 'Login failed')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address first.')
+      return
+    }
+    setError('')
+    setSubmitting(true)
+    try {
+      await resetPassword(email)
+      setResetSent(true)
+    } catch (err) {
+      setError(err.message || 'Failed to send reset email')
     } finally {
       setSubmitting(false)
     }
@@ -56,9 +74,19 @@ export default function Login() {
               />
             </div>
             <div className="form-control">
-              <label className="label" htmlFor="password">
-                <span className="label-text text-slate-600">Password</span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="label" htmlFor="password">
+                  <span className="label-text text-slate-600">Password</span>
+                </label>
+                <button 
+                  type="button" 
+                  onClick={handleResetPassword}
+                  className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                  disabled={submitting}
+                >
+                  Forgot password?
+                </button>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -70,6 +98,11 @@ export default function Login() {
             </div>
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            )}
+            {resetSent && (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                Password reset email sent! Please check your inbox.
+              </div>
             )}
             <div className="form-control mt-6">
               <button
